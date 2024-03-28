@@ -20,4 +20,4 @@ COPY /app .
 
 RUN gradle installDist
 
-CMD ./build/install/bin/java-javalin-blog
+CMD ./build/install/app/bin/app

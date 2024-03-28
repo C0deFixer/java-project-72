@@ -30,10 +30,13 @@ public class App {
         String port = System.getenv().getOrDefault("PORT", "7070");
         return Integer.valueOf(port);
     }
-
     //locally need can't be run on localhost
     private static String getAdress() {
         return System.getenv().getOrDefault("ADRESS", "127.0.0.1");
+    }
+
+    private static String geDataBaseURL() {
+        return System.getenv().getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;");
     }
 
     private static String readResourceFile(String fileName) throws IOException {
@@ -53,7 +56,7 @@ public class App {
         // System.setProperty("h2.traceLevel", "TRACE_LEVEL_SYSTEM_OUT=4");
 
         var hikariConfig = new HikariConfig();
-        hikariConfig.setJdbcUrl("jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;");
+        hikariConfig.setJdbcUrl(geDataBaseURL());
 
         var dataSource = new HikariDataSource(hikariConfig);
         //      var sql = readResourceFile("schema.sql");

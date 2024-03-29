@@ -73,17 +73,18 @@ public class App {
         hikariConfig.setPassword(password);
 
         var dataSource = new  HikariDataSource(hikariConfig);
-        //      var sql = readResourceFile("schema.sql");
+              var sql = readResourceFile("schema.sql");
 
-//        log.info(sql);
+        log.info(sql);
         try (var connection = dataSource.getConnection();
              var statement = connection.createStatement()) {
-//            statement.execute(sql);
-            System.out.println("Connection established!");
+            log.info("Connection established!");
+            statement.execute(sql);
+            //System.out.println("Connection established!");
+            log.info("table urls created!");
         } catch (SQLException e) {
-            System.out.println(e.toString());
+            log.info(e.toString());
         }
-
 
         var app = Javalin.create(config -> {
             config.bundledPlugins.enableDevLogging();

@@ -11,7 +11,9 @@ import java.util.stream.Collectors;
 import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
 import gg.jte.resolve.ResourceCodeResolver;
+import hexlet.code.controller.UrlController;
 import hexlet.code.dto.MainPage;
+import hexlet.code.util.NamedRoutes;
 import io.javalin.rendering.template.JavalinJte;
 
 import static io.javalin.rendering.template.TemplateUtil.model;
@@ -72,8 +74,8 @@ public class App {
         hikariConfig.setUsername(userName);
         hikariConfig.setPassword(password);
 
-        var dataSource = new  HikariDataSource(hikariConfig);
-              var sql = readResourceFile("schema.sql");
+        var dataSource = new HikariDataSource(hikariConfig);
+        var sql = readResourceFile("schema.sql");
 
         log.info(sql);
         try (var connection = dataSource.getConnection();
@@ -97,15 +99,9 @@ public class App {
             ctx.contentType("text/html; charset=utf-8");
         });
 
-
-        app.get("/", ctx -> {
-            //ctx.render("index.jte", model("page",page));
-            var visited = Boolean.valueOf(ctx.cookie("visited"));
-            //var page = new MainPage(visited, ctx.sessionAttribute("currentUser"));
-            MainPage page = new MainPage(visited, "Dmitry test");
-            ctx.render("index.jte", model("page", page));
-            ctx.cookie("visited", String.valueOf(true));
-        });
+        app.get(NamedRoutes.buildUrlPath(), UrlController::create);
+        app.get(NamedRoutes.showUrlPath(), UrlController::showUrl);
+        app.post(NamedRoutes.urlsPath(), UrlController::showUrlsPath);
 
         return app;
     }

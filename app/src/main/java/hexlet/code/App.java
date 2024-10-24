@@ -12,17 +12,15 @@ import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
 import gg.jte.resolve.ResourceCodeResolver;
 import hexlet.code.controller.UrlController;
-import hexlet.code.dto.MainPage;
+import hexlet.code.repository.BaseRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.rendering.template.JavalinJte;
 
-import static io.javalin.rendering.template.TemplateUtil.model;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 import io.javalin.Javalin;
-import io.javalin.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -82,7 +80,6 @@ public class App {
              var statement = connection.createStatement()) {
             log.info("Connection established!");
             statement.execute(sql);
-            //System.out.println("Connection established!");
             log.info("table urls created!");
         } catch (SQLException e) {
             log.info(e.toString());
@@ -93,15 +90,17 @@ public class App {
             config.fileRenderer(new JavalinJte(createTemplateEngine()));
         });
 
-        //BaseRepository.dataSource = dataSource;
+        BaseRepository.dataSource = dataSource;
+        log.info("dataSource applied!");
 
         app.before(ctx -> {
             ctx.contentType("text/html; charset=utf-8");
         });
 
-        app.get(NamedRoutes.buildUrlPath(), UrlController::create);
+        app.get(NamedRoutes.rootPath(), UrlController::show);
+        app.post(NamedRoutes.buildUrlPath(), UrlController::create);
         app.get(NamedRoutes.showUrlPath(), UrlController::showUrl);
-        app.post(NamedRoutes.urlsPath(), UrlController::showUrlsPath);
+        app.get(NamedRoutes.urlsPath(), UrlController::showUrlsPath);
 
         return app;
     }

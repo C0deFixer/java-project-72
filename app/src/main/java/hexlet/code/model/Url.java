@@ -1,28 +1,39 @@
 package hexlet.code.model;
 
-import io.micrometer.core.instrument.distribution.StepBucketHistogram;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+import java.net.URL;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
+@ToString
 public class Url {
-    Long  id;
-    String name;
+    Long id;
     String protocol;
-    String authority;
+    String host;
+    int port;
 
     LocalDateTime createdAt;
 
-    public Url(String name, String protocol, String authority) {
-        this.name = name;
+    public Url(String protocol, String host) {
         this.protocol = protocol;
-        this.authority = authority;
+        this.host = host;
 
     }
+
+    public String getName() {
+        return protocol + host + port;
+    }
+
+    public static Url valueOf(URL url) {
+        return Url.builder()
+                .protocol(url.getProtocol())
+                .host(url.getHost())
+                .port(url.getPort())
+                .build();
+    }
+
 }

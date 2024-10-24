@@ -2,8 +2,8 @@ DROP TABLE IF EXISTS urls;
 
 CREATE TABLE URLS (
     id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    name VARCHAR(255) NOT NULL,
     protocol VARCHAR(255) NOT NULL,
-    authority VARCHAR(255) NOT NULL,
+    host VARCHAR(255) NOT NULL,
+    port integer,
     created_at TIMESTAMP
 );

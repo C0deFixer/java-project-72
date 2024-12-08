@@ -34,7 +34,7 @@ public class UrlRepository extends BaseRepository {
                 url.setCreatedAt(created_at);
                 log.info("New Url save to DB: "+  url);
             } else {
-                throw new SQLException("DB have not returned an id after saving an entity");
+                throw new SQLException("DB have not returned an id after saving entity");
             }
         }
     }
@@ -83,7 +83,7 @@ public class UrlRepository extends BaseRepository {
         return entities;
     }
 
-    public static boolean alreadyExistsByURL(URL url) throws SQLException {
+    public static boolean ifExistsByURL(URL url) throws SQLException {
         var sql = "SELECT id FROM urls WHERE protocol = ? AND host = ? AND port =?";
         try (var conn = dataSource.getConnection();
              var preparedStatement = conn.prepareStatement(sql)) {

@@ -7,3 +7,6 @@ CREATE TABLE URLS (
     port integer,
     created_at TIMESTAMP
 );
+
+CREATE INDEX urls_created_at
+    ON URLS (created_at ASC);

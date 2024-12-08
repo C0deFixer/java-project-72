@@ -2,7 +2,6 @@
 @import hexlet.code.dto.UrlPage
 @import hexlet.code.util.NamedRoutes
 @param UrlPage page
-!{var flashTipe = page.getFlashTipe().isBlank() ? "alert alert-success" : page.getFlashTipe();}
 
 @template.layout.page(
 page = page,

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import gg.jte.ContentType;
@@ -26,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class App {
     //test branches
+
     private static int getPort() {
         String port = System.getenv().getOrDefault("PORT", "7070");
         return Integer.valueOf(port);
@@ -36,15 +36,15 @@ public class App {
         return System.getenv().getOrDefault("ADRESS", "127.0.0.1");
     }
 
-    private static String geDataBaseURL() {
+    private static String getDataBaseURL() {
         return System.getenv().getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;");
     }
 
-    private static String geDataBaseUser() {
+    private static String getDataBaseUser() {
         return System.getenv().getOrDefault("JDBC_DATABASE_USER", "");
     }
 
-    private static String geDataBasePass() {
+    private static String getDataBasePass() {
         return System.getenv().getOrDefault("JDBC_DATABASE_PASSWORD", "");
     }
 
@@ -65,12 +65,9 @@ public class App {
         // System.setProperty("h2.traceLevel", "TRACE_LEVEL_SYSTEM_OUT=4");
 
         var hikariConfig = new HikariConfig();
-        String dataBaseURL = geDataBaseURL();
-        String userName = geDataBaseUser();
-        String password = geDataBasePass();
-        hikariConfig.setJdbcUrl(dataBaseURL);
-        hikariConfig.setUsername(userName);
-        hikariConfig.setPassword(password);
+        hikariConfig.setJdbcUrl(getDataBaseURL());
+        hikariConfig.setUsername(getDataBaseUser());
+        hikariConfig.setPassword(getDataBasePass());
 
         var dataSource = new HikariDataSource(hikariConfig);
         var sql = readResourceFile("schema.sql");
@@ -82,7 +79,9 @@ public class App {
             statement.execute(sql);
             log.info("table urls created!");
         } catch (SQLException e) {
+            log.info("SQL Exception happened!");
             log.info(e.toString());
+            throw e;
         }
 
         var app = Javalin.create(config -> {
@@ -97,10 +96,10 @@ public class App {
             ctx.contentType("text/html; charset=utf-8");
         });
 
-        app.get(NamedRoutes.rootPath(), UrlController::show);
-        app.post(NamedRoutes.buildUrlPath(), UrlController::create);
-        app.get(NamedRoutes.showUrlPath(), UrlController::showUrl);
-        app.get(NamedRoutes.urlsPath(), UrlController::showUrlsPath);
+        app.get(NamedRoutes.rootPath(), UrlController::show); // "/"
+        app.post(NamedRoutes.buildUrlPath(), UrlController::create); // "/urls"
+        app.get(NamedRoutes.showUrlPath(), UrlController::showUrl); // "/urls/{id}"
+        app.get(NamedRoutes.urlsPath(), UrlController::showUrlsPath); // "/urls" index.jte
 
         return app;
     }

@@ -13,7 +13,7 @@ public class BasePage {
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(PATTERN_FORMAT);
 
     private String flash;
-    private String flashTipe;
+    private String flashType;
 
     public static String getDateAsString(LocalDateTime localDateTime) {
         return localDateTime.format(dateTimeFormatter);

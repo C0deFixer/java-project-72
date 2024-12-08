@@ -3,7 +3,7 @@
 @import gg.jte.Content
 @param Content content
 @param BasePage page = null
-!{var flashTipe = page == null || page.getFlashTipe() == null || page.getFlashTipe().isEmpty() ? "alert-success" : page.getFlashTipe();}
+!{var flashTipe = page == null || page.getFlashType() == null || page.getFlashType().isEmpty() ? "alert-success" : page.getFlashType();}
 
 <!doctype html>
 <html lang="en">

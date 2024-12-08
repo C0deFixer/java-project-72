@@ -1,33 +1,36 @@
 package hexlet.code.controller;
 
-import hexlet.code.dto.BasePage;
 import hexlet.code.dto.MainPage;
 import hexlet.code.dto.UrlPage;
 import hexlet.code.dto.UrlsPage;
 import hexlet.code.model.Url;
+import hexlet.code.repository.BaseRepository;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.http.Context;
 import io.javalin.validation.ValidationException;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Optional;
 
 import static java.lang.String.format;
 
+@Slf4j
 public class UrlController {
-    public static final String flashTipeSuccess = "alert-success";
-    public static final String flashTipeDanger = "alert-success";
+    public static final String flashTypeSuccess = "alert-success";
+    public static final String flashTypeAlert = "alert-success";
 
-    public static void show(Context ctx) throws SQLException {
+    public static final String flashTypeInfo = "alert-info";
+
+    public static void show(Context ctx) {
         MainPage page = new MainPage(false);
         page.setFlash(ctx.consumeSessionAttribute("flashMessage"));
-        page.setFlashTipe(ctx.consumeSessionAttribute("flashType"));
+        page.setFlashType(ctx.consumeSessionAttribute("flashType"));
         ctx.render("index.jte", Collections.singletonMap("page", page));
     }
     public static void create(Context ctx) throws SQLException {
@@ -36,21 +39,24 @@ public class UrlController {
             var name = ctx.formParamAsClass("url", String.class)
                     .check(value -> value.trim().length() > 2, "Url сайта должно быть длиннее двух символов")
                     .get();
+            log.info("Post request create: " + ctx.path() +" form param url: " + name);
             URI uri = new URI(name.trim()); //Throw URISyntaxException
-            if (UrlRepository.alreadyExistsByURL(uri.toURL())) {
+            if (UrlRepository.ifExistsByURL(uri.toURL())) {
+                log.info("Already exist: "+ uri);
                 ctx.sessionAttribute("flashMessage", "Страница уже существует");
-                ctx.sessionAttribute("flashType", flashTipeDanger);
-                ctx.redirect(NamedRoutes.rootPath());
+                ctx.sessionAttribute("flashType", flashTypeAlert);
+                ctx.redirect(NamedRoutes.rootPath()); // "/"
             } else {
                 var url = URI.create(name);
                 UrlRepository.save(Url.valueOf(url.toURL()));
                 ctx.sessionAttribute("flashMessage", "Страница успешно добавлена");
-                ctx.sessionAttribute("flashType", flashTipeSuccess);
-                ctx.redirect(NamedRoutes.urlsPath());
+                ctx.sessionAttribute("flashType", flashTypeSuccess);
+                ctx.redirect(NamedRoutes.urlsPath()); // "/urls"
             }
-        } catch (URISyntaxException | ValidationException | MalformedURLException e) {
-            ctx.sessionAttribute("flashMessage", "Некоррекный URL");
-            ctx.sessionAttribute("flashType", flashTipeDanger);
+        } catch (URISyntaxException | ValidationException | MalformedURLException | IllegalArgumentException e) {
+            //todo keep entered value of URL string by user
+            ctx.sessionAttribute("flashMessage", "Некоррекный URL: " + e.getMessage());
+            ctx.sessionAttribute("flashType", flashTypeAlert);
             ctx.redirect(NamedRoutes.rootPath());
         }
 
@@ -64,7 +70,7 @@ public class UrlController {
             Optional<Url> urlOptional = UrlRepository.getById(id);
             if (urlOptional.isEmpty()) {
                 ctx.sessionAttribute("flashMessage", format("URL c id = %s не найден!", id));
-                ctx.sessionAttribute("flashType", flashTipeDanger);
+                ctx.sessionAttribute("flashType", flashTypeAlert);
                 ctx.redirect(NamedRoutes.rootPath());
             } else {
                 Url url = urlOptional.get();
@@ -76,7 +82,7 @@ public class UrlController {
         } catch (ValidationException e) {
             var id = ctx.pathParam("id");
             ctx.sessionAttribute("flashMessage", format("Некорретное значение id для Url = %s !", id));
-            ctx.sessionAttribute("flashType", flashTipeDanger);
+            ctx.sessionAttribute("flashType", flashTypeAlert);
             ctx.redirect(NamedRoutes.rootPath());
         }
 
@@ -84,8 +90,8 @@ public class UrlController {
 
     public static void showUrlsPath(Context ctx) throws SQLException {
         UrlsPage page = new UrlsPage(UrlRepository.getUrlEntities());
-/*            page.setFlash(ctx.consumeSessionAttribute("flash"));
-            page.setFlashTipe(ctx.consumeSessionAttribute("flashTipe"));*/
+            page.setFlash(ctx.consumeSessionAttribute("flashMessage"));
+            page.setFlashType(ctx.consumeSessionAttribute("flashType"));
         ctx.render("urls/index.jte", Collections.singletonMap("page", page));
     }
 }

@@ -10,13 +10,13 @@ import java.time.format.DateTimeFormatter;
 @Setter
 public class BasePage {
     private static final String PATTERN_FORMAT = "dd/MM/yyyy HH:mm";
-    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(PATTERN_FORMAT);
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(PATTERN_FORMAT);
 
     private String flash;
     private String flashType;
 
     public static String getDateAsString(LocalDateTime localDateTime) {
-        return localDateTime.format(dateTimeFormatter);
+        return localDateTime.format(DATE_TIME_FORMATTER);
     }
 }
 

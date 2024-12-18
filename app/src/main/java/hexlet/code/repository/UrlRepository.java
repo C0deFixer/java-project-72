@@ -15,24 +15,24 @@ import java.util.Optional;
 @Slf4j
 public class UrlRepository extends BaseRepository {
 
-    final static int LIMIT = 50;
+    static final int LIMIT = 50;
 
     public static void save(Url url) throws SQLException {
         var sql = "INSERT INTO urls (protocol, host, port, created_at) VALUES (?, ?, ?, ?)";
         try (var conn = dataSource.getConnection();
              var preparedStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            LocalDateTime created_at = LocalDateTime.now();
-            log.info("Set created_at: "  + created_at.format(BaseRepository.dateTimeFormatter));
+            LocalDateTime createdAt = LocalDateTime.now();
+            log.info("Set created_at: " + createdAt.format(BaseRepository.DATE_TIME_FORMATTER));
             preparedStatement.setString(1, url.getProtocol());
             preparedStatement.setString(2, url.getHost());
             preparedStatement.setInt(3, url.getPort());
-            preparedStatement.setTimestamp(4, Timestamp.valueOf(created_at));
+            preparedStatement.setTimestamp(4, Timestamp.valueOf(createdAt));
             preparedStatement.executeUpdate();
             var generatedKeys = preparedStatement.getGeneratedKeys();
             if (generatedKeys.next()) {
                 url.setId(generatedKeys.getLong(1));
-                url.setCreatedAt(created_at);
-                log.info("New Url save to DB: "+  url);
+                url.setCreatedAt(createdAt);
+                log.info("New Url save to DB: " + url);
             } else {
                 throw new SQLException("DB have not returned an id after saving entity");
             }
@@ -58,7 +58,8 @@ public class UrlRepository extends BaseRepository {
                 return Optional.of(url);
             } else {
                 log.info("NOT Found Url in  DB by id: " + id);
-                return Optional.empty();}
+                return Optional.empty();
+            }
         }
     }
 

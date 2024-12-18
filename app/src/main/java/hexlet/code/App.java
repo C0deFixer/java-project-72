@@ -32,7 +32,7 @@ public class App {
     }
 
     //locally need can't be run on localhost
-    private static String getAdress() {
+    public static String getAdress() {
         return System.getenv().getOrDefault("ADRESS", "127.0.0.1");
     }
 
@@ -58,7 +58,7 @@ public class App {
     public static void main(String[] args) throws IOException, SQLException {
         var app = getApp();
 
-        app.start(getAdress(), getPort());
+        app.start(getAdress(), getPort()); //use ADRESS ENV for render deploy based on docker host 0.0.0.0
     }
 
     public static Javalin getApp() throws IOException, SQLException {

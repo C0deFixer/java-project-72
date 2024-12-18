@@ -6,6 +6,8 @@ build:
 	make -C app build
 run:
 	make -C app run
+lint:
+	make -C app lint
 test:
 	make -C app test
 

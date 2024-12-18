@@ -4,6 +4,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 plugins {
     application
     checkstyle
+    jacoco
     id("io.freefair.lombok") version "8.6"
     id("com.github.ben-manes.versions") version "0.51.0"
     id("com.github.johnrengelman.shadow") version "8.1.1" //collapsing all dependencies and project code into a single Jar file
@@ -23,7 +24,7 @@ repositories {
 
 dependencies {
     implementation("com.h2database:h2:2.2.224")
-    implementation("org.postgresql:postgresql:42.7.1")
+    implementation("org.postgresql:postgresql:42.7.2")
     implementation("com.zaxxer:HikariCP:5.1.0")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.16.1")
     implementation("org.apache.commons:commons-text:1.11.0")
@@ -36,6 +37,8 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.25.3")
     testImplementation(platform("org.junit:junit-bom:5.10.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.junit-pioneer:junit-pioneer:2.3.0")
+
 }
 
 tasks.test {
@@ -48,4 +51,12 @@ tasks.test {
         // showCauses = true
         showStandardStreams = true
     }
+    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)  // tests are required to run before generating the report
+            reports {
+                xml.required.set(true)
+            }
 }

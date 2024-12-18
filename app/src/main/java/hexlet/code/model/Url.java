@@ -1,6 +1,9 @@
 package hexlet.code.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Builder;
 
 import java.net.URL;
 import java.time.LocalDateTime;
@@ -9,7 +12,6 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
-@ToString
 public class Url {
     Long id;
     String protocol;
@@ -18,14 +20,17 @@ public class Url {
 
     LocalDateTime createdAt;
 
-    public Url(String protocol, String host) {
+    public Url(String protocol, String host){
         this.protocol = protocol;
         this.host = host;
-
     }
 
-    public String getName() {
-        return protocol + host + port;
+    /**
+     *  Use for represent URL as String in jte.
+     */
+    @Override
+    public String toString() {
+        return String.format("%s://%s", protocol, host);
     }
 
     public static Url valueOf(URL url) {

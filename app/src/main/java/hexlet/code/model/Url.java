@@ -20,13 +20,13 @@ public class Url {
 
     LocalDateTime createdAt;
 
-    public Url(String protocol, String host){
+    public Url(String protocol, String host) {
         this.protocol = protocol;
         this.host = host;
     }
 
     /**
-     *  Use for represent URL as String in jte.
+     * Use for represent URL as String in jte.
      */
     @Override
     public String toString() {

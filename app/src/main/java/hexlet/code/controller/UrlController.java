@@ -75,7 +75,8 @@ public class UrlController {
                     .get();
             Optional<Url> urlOptional = UrlRepository.getById(id);
             if (urlOptional.isEmpty()) {
-                throw new NotFoundResponse(String.format("URL c id = %d не найден!", id));
+                log.info(String.format("Url with id = %s not found! throwing exception", id));
+                throw new NotFoundResponse(String.format("Url with id = %s not found!", id));
                 /*ctx.sessionAttribute("flashMessage", format("URL c id = %s не найден!", id));
                 ctx.sessionAttribute("flashType", FLASH_TYPE_ALERT);
             //ctx.redirect(NamedRoutes.rootPath());*/

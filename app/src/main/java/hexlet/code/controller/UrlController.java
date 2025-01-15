@@ -68,7 +68,7 @@ public class UrlController {
 
     }
 
-    public static void showUrl(Context ctx) throws SQLException {
+    public static void showUrl(Context ctx) {
 
         try {
             var id = ctx.pathParamAsClass("id", Long.class)

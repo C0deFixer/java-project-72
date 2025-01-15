@@ -64,7 +64,7 @@ public class UrlRepository extends BaseRepository {
     }
 
     public static List<Url> getUrlEntities() throws SQLException {
-       var sql = "SELECT urls.id, urls.protocol, urls.host, urls.port, urls.created_at, "
+        var sql = "SELECT urls.id, urls.protocol, urls.host, urls.port, urls.created_at, "
                 + "last_url_checks.status_code AS last_check_status_code, "
                 + "last_url_checks.created_at AS last_check_created_at "
                 + "FROM urls"
@@ -95,8 +95,7 @@ public class UrlRepository extends BaseRepository {
                 entities.add(url);
             }
 
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             log.info(e.getMessage());
             throw e;
         }

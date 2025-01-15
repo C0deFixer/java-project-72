@@ -41,7 +41,10 @@ public class Url {
 
     /**
      * Use for request URL as String in Unirest.
+     *
+     * @return A formatted string
      */
+
     public String toUrlString() {
         return String.format("%s://%s:%s", protocol, host, port == -1 ? "" : String.valueOf(port));
     }

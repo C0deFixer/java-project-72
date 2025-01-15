@@ -50,7 +50,7 @@ class AppTest {
     private final String FIXTURE_PATH = "/app/src/test/resources";
 
     private static String readResourceFile(String fileName) throws IOException {
-        var inputStream = AppTest.class.getClassLoader().getResourceAsStream(fileName); //File file = new File(classLoader.getResource(fileName).getFile());;
+        var inputStream = AppTest.class.getClassLoader().getResourceAsStream(fileName);
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             return reader.lines().collect(Collectors.joining("\n"));
         }
@@ -176,10 +176,14 @@ class AppTest {
             assertThat(row).isNotNull();
             Elements tds = row.getElementsByTag("td");
 
-            assertThat(tds.get(1).text()).isEqualTo("200"); //Status code column 2
-            assertThat(tds.get(3).text()).contains("This page is just Mock response");  //H1 column 4
-            assertThat(tds.get(4).text()).contains("Bla bla bla"); //description column 5
-            LocalDateTime createdAt = LocalDateTime.parse(tds.get(5).text(), hexlet.code.dto.BasePage.DATE_TIME_FORMATTER); //Created at column 6
+            //Status code column 2
+            assertThat(tds.get(1).text()).isEqualTo("200");
+            //H1 column 4
+            assertThat(tds.get(3).text()).contains("This page is just Mock response");
+            //description column 5
+            assertThat(tds.get(4).text()).contains("Bla bla bla");
+            //Created at column 6
+            LocalDateTime createdAt = LocalDateTime.parse(tds.get(5).text(), hexlet.code.dto.BasePage.DATE_TIME_FORMATTER);
 
             assertThat(createdAt).isAfter(LocalDateTime.now().minusSeconds(10L));
             assertThat(createdAt).isBefore(LocalDateTime.now());
@@ -217,8 +221,8 @@ class AppTest {
             Document doc = Jsoup.parse(body);
 */
 
-/*            //Chack if alert block contains correct message
-                *//*  Block of alert should look like this
+            /*            //Chack if alert block contains correct message
+             *//*  Block of alert should look like this
                     <div class="rounded-0 m-0 alert alert-dismissible fade show alert-danger" role="alert">
                     <p class="m-0">Некорректный адрес</p>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>

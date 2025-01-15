@@ -1,6 +1,5 @@
 package hexlet.code.util;
 
-import hexlet.code.exeptions.BadResponseException;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import kong.unirest.UnirestException;

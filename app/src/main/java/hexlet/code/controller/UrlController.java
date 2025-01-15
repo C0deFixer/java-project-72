@@ -3,7 +3,6 @@ package hexlet.code.controller;
 import hexlet.code.dto.MainPage;
 import hexlet.code.dto.UrlPage;
 import hexlet.code.dto.UrlsPage;
-import hexlet.code.exeptions.BadResponseException;
 import hexlet.code.model.Url;
 import hexlet.code.model.UrlCheck;
 import hexlet.code.repository.UrlCheckRepository;
@@ -11,18 +10,15 @@ import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
 import hexlet.code.util.WebSiteCheck;
 import io.javalin.http.Context;
-import io.javalin.http.HttpStatus;
 import io.javalin.http.NotFoundResponse;
 import io.javalin.validation.ValidationException;
 import kong.unirest.HttpResponse;
 import kong.unirest.UnirestException;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Optional;
@@ -100,8 +96,7 @@ public class UrlController {
             ctx.sessionAttribute("flashMessage", format("Некорретное значение id для Url = %s !", id));
             ctx.sessionAttribute("flashType", FLASH_TYPE_ALERT);
             ctx.redirect(NamedRoutes.rootPath());
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             var id = ctx.pathParam("id");
             ctx.sessionAttribute("flashMessage", format("Ошибка получения данных Url c id %d: " + e.getMessage(), id));
             ctx.sessionAttribute("flashType", FLASH_TYPE_ALERT);
@@ -133,8 +128,7 @@ public class UrlController {
                     ctx.sessionAttribute("flashMessage", "Страница успешно проверена");
                     ctx.sessionAttribute("flashType", FLASH_TYPE_SUCCESS);
                     ctx.redirect(NamedRoutes.urlsPath() + "/" + id);
-                }
-                catch (ValidationException | UnirestException e) {
+                } catch (ValidationException | UnirestException e) {
                     ctx.sessionAttribute("flashMessage", "Некорректный адрес");
                     ctx.sessionAttribute("flashType", FLASH_TYPE_ALERT);
                     ctx.redirect(NamedRoutes.urlsPath() + "/" + id);
@@ -142,8 +136,7 @@ public class UrlController {
 
             }
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.info(e.getMessage());
             throw e;
         }

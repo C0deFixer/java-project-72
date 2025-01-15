@@ -3,7 +3,6 @@ package hexlet.code.repository;
 import hexlet.code.model.UrlCheck;
 import lombok.extern.slf4j.Slf4j;
 
-import java.sql.Clob;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
@@ -16,7 +15,8 @@ public class UrlCheckRepository extends BaseRepository {
     private static final int URL_CHECK_LIMIT = 50;
 
     public static void save(UrlCheck urlCheck) throws SQLException {
-        var sql = "INSERT INTO url_checks (url_id, status_code, title, h1, description, created_at) VALUES (?, ?, ?, ?, ?, ?)";
+        var sql = "INSERT INTO url_checks (url_id, status_code, title, h1, description, created_at) " +
+                "VALUES (?, ?, ?, ?, ?, ?)";
         try (var conn = dataSource.getConnection();
              var preparedStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             LocalDateTime createdAt = LocalDateTime.now();

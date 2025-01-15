@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Builder
-public class UrlPage extends BasePage implements Cloneable{
+public class UrlPage extends BasePage implements Cloneable {
     Long id;
     String name;
     LocalDateTime createdAt;

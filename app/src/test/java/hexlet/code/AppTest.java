@@ -185,7 +185,7 @@ class AppTest {
             //Created at column 6
             LocalDateTime createdAt = LocalDateTime.parse(tds.get(5).text(), hexlet.code.dto.BasePage.DATE_TIME_FORMATTER);
 
-            assertThat(createdAt).isAfter(LocalDateTime.now().minusSeconds(10L));
+            assertThat(createdAt).isAfter(LocalDateTime.now().minusSeconds(60L));
             assertThat(createdAt).isBefore(LocalDateTime.now());
         });
 

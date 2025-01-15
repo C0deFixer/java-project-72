@@ -42,7 +42,7 @@ public class UrlCheckRepository extends BaseRepository {
     }
 
     public static List<UrlCheck> getUrlChecksByUrlId(Long urlId) throws SQLException {
-        var sql = "SELECT id, status_code, title, h1, description, created_at"
+        var sql = "SELECT id, status_code, title, h1, description, created_at, url_id"
                 + " FROM url_checks"
                 + " WHERE url_id = (?) ORDER BY id DESC OFFSET 0 ROWS FETCH NEXT "
                 + URL_CHECK_LIMIT + " ROWS ONLY";
@@ -59,6 +59,7 @@ public class UrlCheckRepository extends BaseRepository {
                         .h1(resultSet.getString(4))
                         .description(resultSet.getString(5))
                         .createdAt(resultSet.getTimestamp(6).toLocalDateTime())
+                        .urlId(resultSet.getLong(7))
                         .build());
             }
 

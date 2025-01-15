@@ -32,10 +32,10 @@ content = @`
                                 <a href="${NamedRoutes.urlsPath()}/${url.getId()}">${url.toString()}</a>
                             </td>
                             <td>
-                                last check
+                                ${url.getLastCheckCreatedAt() == null ? "" : page.getDateAsString(url.getLastCheckCreatedAt())}
                             </td>
                             <td>
-                                code response
+                                ${url.getLastCheckStatusCode()}
                             </td>
                         </tr>
                     @endfor

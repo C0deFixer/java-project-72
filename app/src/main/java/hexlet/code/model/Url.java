@@ -19,6 +19,12 @@ public class Url {
     int port;
 
     LocalDateTime createdAt;
+    int lastCheckStatusCode;
+    LocalDateTime lastCheckCreatedAt;
+
+    public Url() {
+        //for jackson parsing to POJO from json test file
+    }
 
     public Url(String protocol, String host) {
         this.protocol = protocol;
@@ -31,6 +37,13 @@ public class Url {
     @Override
     public String toString() {
         return String.format("%s://%s", protocol, host);
+    }
+
+    /**
+     * Use for request URL as String in Unirest.
+     */
+    public String toUrlString() {
+        return String.format("%s://%s:%s", protocol, host, port == -1 ? "" : String.valueOf(port));
     }
 
     public static Url valueOf(URL url) {

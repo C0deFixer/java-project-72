@@ -30,4 +30,7 @@ public class NamedRoutes {
         return "/urls";
     }
 
+    public static String buildUrlCheckPath() {
+        return "/urls/{id}/checks";
+    }
 }

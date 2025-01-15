@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 @Setter
 public class BasePage {
     private static final String PATTERN_FORMAT = "dd/MM/yyyy HH:mm";
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(PATTERN_FORMAT);
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(PATTERN_FORMAT);
 
     private String flash;
     private String flashType;

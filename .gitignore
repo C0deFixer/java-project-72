@@ -33,3 +33,5 @@ src/main/resources/
 .app/.project*
 .app/idea/
 .app/src/main/resources/
+###SQL Console for test and debug
+.app/src/test/resources/console.sql

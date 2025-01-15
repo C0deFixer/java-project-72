@@ -3,7 +3,7 @@
 @import gg.jte.Content
 @param Content content
 @param BasePage page = null
-!{var flashTipe = page == null || page.getFlashType() == null || page.getFlashType().isEmpty() ? "alert-success" : page.getFlashType();}
+!{var flashType = page == null || page.getFlashType() == null || page.getFlashType().isEmpty() ? "alert-success" : page.getFlashType();}
 
 <!doctype html>
 <html lang="en">
@@ -45,7 +45,7 @@
                 </p>--%>
 
 @if(page != null && page.getFlash() != null)
-    <div class="rounded-0 m-0 alert alert-dismissible fade show ${flashTipe}" role="alert">
+    <div class="rounded-0 m-0 alert alert-dismissible fade show ${flashType}" role="alert">
         <p class="m-0">${page.getFlash()}</p>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>

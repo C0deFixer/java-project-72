@@ -22,7 +22,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.javalin.Javalin;
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+@Slf4j //TOdo Log level chose & app
 public class App {
     //test branches
 
@@ -77,7 +77,7 @@ public class App {
              var statement = connection.createStatement()) {
             log.info("Connection established!");
             statement.execute(sql);
-            log.info("table urls created!");
+            log.info("tables indexes and constrains created!");
         } catch (SQLException e) {
             log.info("SQL Exception happened!");
             log.info(e.toString());
@@ -100,6 +100,7 @@ public class App {
         app.post(NamedRoutes.buildUrlPath(), UrlController::create); // "/urls"
         app.get(NamedRoutes.showUrlPath(), UrlController::showUrl); // "/urls/{id}"
         app.get(NamedRoutes.urlsPath(), UrlController::showUrlsPath); // "/urls" index.jte
+        app.post(NamedRoutes.buildUrlCheckPath(), UrlController::createUrlCheck); //urls/{id}/checks
 
         return app;
     }

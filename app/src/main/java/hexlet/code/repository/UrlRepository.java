@@ -1,5 +1,6 @@
 package hexlet.code.repository;
 
+import com.fasterxml.jackson.databind.type.ClassStack;
 import hexlet.code.model.Url;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,7 +16,7 @@ import java.util.Optional;
 @Slf4j
 public class UrlRepository extends BaseRepository {
 
-    static final int LIMIT = 50;
+    static final int LIMIT = 25;
 
     public static void save(Url url) throws SQLException {
         var sql = "INSERT INTO urls (protocol, host, port, created_at) VALUES (?, ?, ?, ?)";
@@ -64,22 +65,41 @@ public class UrlRepository extends BaseRepository {
     }
 
     public static List<Url> getUrlEntities() throws SQLException {
-        var sql = "SELECT id, protocol, host, port, created_at FROM urls ORDER BY created_at DESC LIMIT " + LIMIT;
+       var sql = "SELECT urls.id, urls.protocol, urls.host, urls.port, urls.created_at, "
+                + "last_url_checks.status_code AS last_check_status_code, "
+                + "last_url_checks.created_at AS last_check_created_at "
+                + "FROM urls"
+                + "    LEFT JOIN url_checks as last_url_checks"
+                + "        ON urls.id = last_url_checks.url_id"
+                + "    LEFT JOIN url_checks as url_checks"
+                + "        ON urls.id = url_checks.url_id"
+                + "        AND last_url_checks.created_at < url_checks.created_at"
+                + "    WHERE url_checks.id IS NULL"
+                + "    ORDER BY urls.created_at DESC"
+                + "    OFFSET 0 ROWS FETCH NEXT " + LIMIT + " ROWS ONLY";
+
         List<Url> entities = new ArrayList<>();
         try (var conn = dataSource.getConnection();
              var preparedStatement = conn.prepareStatement(sql)) {
             var resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
+                Timestamp lastCheck = resultSet.getTimestamp("last_check_created_at");
                 Url url = Url.builder()
                         .id(resultSet.getLong("id"))
                         .protocol(resultSet.getString("protocol"))
                         .host(resultSet.getString("host"))
                         .port(resultSet.getInt("port"))
                         .createdAt(resultSet.getTimestamp("created_at").toLocalDateTime())
+                        .lastCheckStatusCode(resultSet.getInt("last_check_status_code"))
+                        .lastCheckCreatedAt(lastCheck == null ? null : lastCheck.toLocalDateTime())
                         .build();
                 entities.add(url);
             }
 
+        }
+        catch (SQLException e) {
+            log.info(e.getMessage());
+            throw e;
         }
         return entities;
     }

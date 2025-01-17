@@ -27,7 +27,7 @@ public class App {
     //test branches
 
     private static int getPort() {
-        String port = System.getenv().getOrDefault("PORT", "7070");
+        String port = System.getenv().getOrDefault("PORT", "8080");
         return Integer.valueOf(port);
     }
 
@@ -40,13 +40,13 @@ public class App {
         return System.getenv().getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;");
     }
 
-    private static String getDataBaseUser() {
+    /*private static String getDataBaseUser() {
         return System.getenv().getOrDefault("JDBC_DATABASE_USER", "");
-    }
+    }*/
 
-    private static String getDataBasePass() {
+    /*private static String getDataBasePass() {
         return System.getenv().getOrDefault("JDBC_DATABASE_PASSWORD", "");
-    }
+    }*/
 
     private static String readResourceFile(String fileName) throws IOException {
         var inputStream = App.class.getClassLoader().getResourceAsStream(fileName);
@@ -66,8 +66,8 @@ public class App {
 
         var hikariConfig = new HikariConfig();
         hikariConfig.setJdbcUrl(getDataBaseURL());
-        hikariConfig.setUsername(getDataBaseUser());
-        hikariConfig.setPassword(getDataBasePass());
+        //hikariConfig.setUsername(getDataBaseUser());
+        //hikariConfig.setPassword(getDataBasePass());
 
         var dataSource = new HikariDataSource(hikariConfig);
         var sql = readResourceFile("schema.sql");

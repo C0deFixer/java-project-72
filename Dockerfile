@@ -1,4 +1,4 @@
-FROM eclipse-temurin:20-jdk
+FROM eclipse-temurin:21-jdk
 
 ARG GRADLE_VERSION=8.4
 

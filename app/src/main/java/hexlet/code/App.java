@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import gg.jte.ContentType;
@@ -32,22 +33,22 @@ public class App {
     }
 
     //locally need can't be run on localhost
-    public static String getAdress() {
-        return System.getenv().getOrDefault("ADRESS", "127.0.0.1");
+    public static String getAddress() {
+        return System.getenv().getOrDefault("ADRESS", "");
     }
 
     private static String getDataBaseURL() {
         return System.getenv().getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;");
     }
 
-    /*private static String getDataBaseUser() {
-        return System.getenv().getOrDefault("JDBC_DATABASE_USER", "");
-    }*/
+    /*  private static String getDataBaseUser() {
+          return System.getenv().getOrDefault("JDBC_DATABASE_USER", "");
+      }
 
-    /*private static String getDataBasePass() {
-        return System.getenv().getOrDefault("JDBC_DATABASE_PASSWORD", "");
-    }*/
-
+      private static String getDataBasePass() {
+          return System.getenv().getOrDefault("JDBC_DATABASE_PASSWORD", "");
+      }
+  */
     private static String readResourceFile(String fileName) throws IOException {
         var inputStream = App.class.getClassLoader().getResourceAsStream(fileName);
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
@@ -56,18 +57,36 @@ public class App {
     }
 
     public static void main(String[] args) throws IOException, SQLException {
-        var app = getApp();
-
-        app.start(getAdress(), getPort()); //use ADRESS ENV for render deploy based on docker host 0.0.0.0
+        Javalin app = getApp();
+        String address = getAddress();
+        if (address.isEmpty()) {
+            app.start(getPort());
+        } else {
+            app.start(address, getPort()); //use ADRESS ENV for render deploy based on docker host 0.0.0.0
+        }
     }
 
     public static Javalin getApp() throws IOException, SQLException {
+        HikariConfig hikariConfig;
         // System.setProperty("h2.traceLevel", "TRACE_LEVEL_SYSTEM_OUT=4");
 
-        var hikariConfig = new HikariConfig();
-        hikariConfig.setJdbcUrl(getDataBaseURL());
-        //hikariConfig.setUsername(getDataBaseUser());
-        //hikariConfig.setPassword(getDataBasePass());
+        //DataSource initiate 2 ways: 1) Use dataSourceClassName & Properties 2) DB URL
+        String dataSourceClassName = System.getenv().getOrDefault("JDBC_DSCN", "");
+        if (dataSourceClassName.isEmpty()) {
+            hikariConfig = new HikariConfig();
+            hikariConfig.setJdbcUrl(getDataBaseURL());
+            hikariConfig.setUsername(System.getenv().getOrDefault("JDBC_DATABASE_USER", ""));
+            hikariConfig.setPassword(System.getenv().getOrDefault("JDBC_DATABASE_PASSWORD", ""));
+        } else {
+            Properties props = new Properties();
+            props.setProperty("dataSourceClassName", dataSourceClassName); //"org.postgresql.ds.PGSimpleDataSource"
+            props.setProperty("dataSource.serverName", System.getenv().getOrDefault("JDBC_HOST", "localhost"));
+            props.setProperty("dataSource.portNumber", System.getenv().getOrDefault("JDBC_PORT", "5432"));
+            props.setProperty("dataSource.user", System.getenv().getOrDefault("JDBC_DATABASE_USER", ""));
+            props.setProperty("dataSource.password", System.getenv().getOrDefault("JDBC_DATABASE_PASSWORD", ""));
+            props.setProperty("dataSource.databaseName", System.getenv().getOrDefault("JDBC_DBNAME", "project"));
+            hikariConfig = new HikariConfig(props);
+        }
 
         var dataSource = new HikariDataSource(hikariConfig);
         var sql = readResourceFile("schema.sql");

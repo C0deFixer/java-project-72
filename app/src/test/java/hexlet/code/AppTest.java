@@ -43,11 +43,11 @@ import java.util.stream.Collectors;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AppTest {
     private Javalin app;
-    private final static int portMockWebServer = 9000;
+    private static final int PORT_MOCK_WEB_SERVER = 9000;
     private static MockWebServer mockWebServer;
     private static ObjectMapper objectMapper;
 
-    private final String FIXTURE_PATH = "/app/src/test/resources";
+    private static final String FIXTURE_PATH = "/app/src/test/resources";
 
     private static String readResourceFile(String fileName) throws IOException {
         var inputStream = AppTest.class.getClassLoader().getResourceAsStream(fileName);
@@ -57,9 +57,9 @@ class AppTest {
     }
 
     @BeforeAll
-    static public void setUpAll() throws IOException {
+    public static void setUpAll() throws IOException {
         mockWebServer = new MockWebServer();
-        mockWebServer.start(portMockWebServer);
+        mockWebServer.start(PORT_MOCK_WEB_SERVER);
 
         objectMapper = new ObjectMapper();
     }
@@ -71,7 +71,7 @@ class AppTest {
     }
 
     @AfterAll
-    static public void tearDownAll() throws IOException {
+    public static void tearDownAll() throws IOException {
         mockWebServer.shutdown();
     }
 
@@ -183,7 +183,8 @@ class AppTest {
             //description column 5
             assertThat(tds.get(4).text()).contains("Bla bla bla");
             //Created at column 6
-            LocalDateTime createdAt = LocalDateTime.parse(tds.get(5).text(), hexlet.code.dto.BasePage.DATE_TIME_FORMATTER);
+            LocalDateTime createdAt = LocalDateTime.parse(tds.get(5).text(),
+                    hexlet.code.dto.BasePage.DATE_TIME_FORMATTER);
 
             assertThat(createdAt).isAfter(LocalDateTime.now().minusSeconds(60L));
             assertThat(createdAt).isBefore(LocalDateTime.now());

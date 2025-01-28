@@ -1,14 +1,10 @@
 package hexlet.code.model;
 
-import kong.unirest.HttpResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 
 import java.time.LocalDateTime;
 
@@ -36,24 +32,6 @@ public class UrlCheck {
     private static final String DESCRIPTION_REG = "<meta\\s*.*name\\s*.*>";
     private static final String TITLE_REG = "<title\\s*.*>\\s*.*<\\/title>";
 
-    public static UrlCheck parseHtmlBody(HttpResponse<String> response) {
-        //Examples of tags
-        //get title <title>Tproger — всё о программировании</title>
-        //get desc <meta name="description" content="blabla">
-        //get h1 <h1 class="logo-xxx" data-v-bdb999f8=""> bla bla </h1>
-        Document doc = Jsoup.parse(response.getBody());
-
-        Element h1Element = doc.selectFirst("h1");
-        Element descriptionElement = doc.selectFirst("meta[name=description]");
-
-        String body = response.getBody();
-        return UrlCheck.builder()
-                .statusCode(response.getStatus())
-                .h1(h1Element == null ? "" : h1Element.text())
-                .title(doc.title())
-                .description(descriptionElement == null ? "" : descriptionElement.attr("content"))
-                .build();
-    }
 
     private static String getHtmlElemenContent(String body) {
 

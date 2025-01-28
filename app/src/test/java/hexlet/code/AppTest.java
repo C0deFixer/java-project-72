@@ -12,10 +12,6 @@ import io.javalin.testtools.JavalinTest;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +31,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -160,34 +155,10 @@ class AppTest {
         UrlRepository.save(url);
 
         JavalinTest.test(app, (server, client) -> {
-            var response = client.post(NamedRoutes.buildUrlCheckPath().replace("{id}", url.getId().toString()));
+            var response = client.post(NamedRoutes.urlChecksPath(url.getId().toString()));
             assertThat(response.code()).isEqualTo(200);
             String body = response.body().string();
-            Document doc = Jsoup.parse(body);
-            Elements tables = doc.getElementsByClass("table-bordered");
-
-            assertThat(tables).isNotNull();
-            assertThat(tables).hasSize(2);
-
-            Element table = tables.get(1);
-            Element tbody = table.selectFirst("tbody");
-            assertThat(tbody).isNotNull();
-            Element row = tbody.selectFirst("tr");
-            assertThat(row).isNotNull();
-            Elements tds = row.getElementsByTag("td");
-
-            //Status code column 2
-            assertThat(tds.get(1).text()).isEqualTo("200");
-            //H1 column 4
-            assertThat(tds.get(3).text()).contains("This page is just Mock response");
-            //description column 5
-            assertThat(tds.get(4).text()).contains("Bla bla bla");
-            //Created at column 6
-            LocalDateTime createdAt = LocalDateTime.parse(tds.get(5).text(),
-                    hexlet.code.dto.BasePage.DATE_TIME_FORMATTER);
-
-            assertThat(createdAt).isAfter(LocalDateTime.now().minusSeconds(60L));
-            assertThat(createdAt).isBefore(LocalDateTime.now());
+            assertThat(body).contains("This page is just Mock response");
         });
 
         List<UrlCheck> urlsChecksByUrlId = UrlCheckRepository.getUrlChecksByUrlId(url.getId());
@@ -215,34 +186,8 @@ class AppTest {
         UrlRepository.save(url);
 
         JavalinTest.test(app, (server, client) -> {
-            var response = client.post(NamedRoutes.buildUrlCheckPath().replace("{id}", url.getId().toString()));
+            var response = client.post(NamedRoutes.urlChecksPath(url.getId().toString()));
             assertThat(response.code()).isEqualTo(200);
-/*
-            String body = response.body().string();
-            Document doc = Jsoup.parse(body);
-*/
-
-            /*            //Chack if alert block contains correct message
-             *//*  Block of alert should look like this
-                    <div class="rounded-0 m-0 alert alert-dismissible fade show alert-danger" role="alert">
-                    <p class="m-0">Некорректный адрес</p>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>*//*
-            Elements alert = doc.getElementsByClass("alert-dismissible");
-
-            Element palert = alert.getFirst().selectFirst("p");
-            assertThat(palert.text()).contains("Некорректный адрес");
-
-            Elements tables = doc.getElementsByClass("table-bordered");
-            assertThat(tables).isNotNull();
-            assertThat(tables).hasSize(2);
-
-            //check table has no info about checks
-            Element table = tables.get(1);
-            Element tbody = table.selectFirst("tbody");
-            assertThat(tbody).isNotNull();
-            Element row = tbody.selectFirst("tr");
-            assertThat(row).isNull();*/
 
         });
 

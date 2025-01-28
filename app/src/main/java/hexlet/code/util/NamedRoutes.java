@@ -10,27 +10,15 @@ public class NamedRoutes {
         return "/urls";
     }
 
-    public static String sessionsPath() {
-        return "/sessions";
-    }
-
-    public static String buildSessionPath() {
-        return "/sessions/build";
-    }
-
-    public static String buildUrlPath() {
-        return "/urls";
-    }
-
-    public static String showUrlPath() {
-        return "/urls/{id}";
+    public static String urlPath(String id) {
+        return "/urls/" + id;
     }
 
     public static String urlsPath() {
         return "/urls";
     }
 
-    public static String buildUrlCheckPath() {
-        return "/urls/{id}/checks";
+    public static String urlChecksPath(String id) {
+        return "/urls/" + id + "/checks";
     }
 }

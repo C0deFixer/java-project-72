@@ -16,5 +16,3 @@ report:
 
 build-run:
 	build run
-
-.PHONY: build

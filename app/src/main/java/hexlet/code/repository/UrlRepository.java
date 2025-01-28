@@ -3,7 +3,6 @@ package hexlet.code.repository;
 import hexlet.code.model.Url;
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.URL;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
@@ -39,7 +38,7 @@ public class UrlRepository extends BaseRepository {
         }
     }
 
-    public static Optional<Url> getById(Long id) throws SQLException {
+    public static Optional<Url> findById(Long id) throws SQLException {
         var sql = "SELECT id, protocol, host, port, created_at FROM urls WHERE id = ? ";
         try (var conn = dataSource.getConnection();
              var preparedStatement = conn.prepareStatement(sql)) {
@@ -102,7 +101,7 @@ public class UrlRepository extends BaseRepository {
         return entities;
     }
 
-    public static boolean ifExistsByURL(URL url) throws SQLException {
+    public static boolean ifExistsByURL(Url url) throws SQLException {
         var sql = "SELECT id FROM urls WHERE protocol = ? AND host = ? AND port =?";
         try (var conn = dataSource.getConnection();
              var preparedStatement = conn.prepareStatement(sql)) {

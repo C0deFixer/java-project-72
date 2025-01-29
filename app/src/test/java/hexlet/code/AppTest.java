@@ -60,7 +60,7 @@ class AppTest {
     }
 
     @BeforeEach
-    @SetEnvironmentVariable(key = "JDBC_DATABASE_URL", value = "jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;")
+    //@SetEnvironmentVariable(key = "JDBC_DATABASE_URL", value = "jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;")
     public final void setUp() throws IOException, SQLException {
         app = App.getApp();
     }

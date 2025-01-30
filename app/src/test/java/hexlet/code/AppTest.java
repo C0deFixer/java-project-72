@@ -11,7 +11,6 @@ import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,7 +38,6 @@ class AppTest {
     private Javalin app;
     private static final int PORT_MOCK_WEB_SERVER = 9000;
     private static MockWebServer mockWebServer;
-    private static ObjectMapper objectMapper;
 
     private static final String FIXTURE_PATH = "/app/src/test/resources";
 
@@ -54,8 +52,6 @@ class AppTest {
     public static void setUpAll() throws IOException {
         mockWebServer = new MockWebServer();
         mockWebServer.start(PORT_MOCK_WEB_SERVER);
-
-        objectMapper = new ObjectMapper();
     }
 
     @BeforeEach

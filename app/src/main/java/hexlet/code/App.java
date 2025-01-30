@@ -32,7 +32,7 @@ public final class App {
     }
 
     public static String getAddress() {
-        return System.getenv().getOrDefault("ADRESS", "");//locally need can't be run on localhost
+        return System.getenv().getOrDefault("ADRESS", ""); //locally need can't be run on localhost
     }
 
     private static String getDataBaseURL() {
@@ -120,7 +120,6 @@ public final class App {
         }
 
     }
-
 
 
 }

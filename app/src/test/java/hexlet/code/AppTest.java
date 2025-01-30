@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.junitpioneer.jupiter.SetEnvironmentVariable;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -1,11 +1,13 @@
 package hexlet.code;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.stream.Collectors;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.io.BufferedReader;
+import java.util.Properties;
+
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -29,14 +31,45 @@ public final class App {
         return Integer.valueOf(port);
     }
 
-    private static String getDatabaseUrl() {
-        return System.getenv().getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project");
+    public static String getAddress() {
+        return System.getenv().getOrDefault("ADRESS", "");//locally need can't be run on localhost
+    }
+
+    private static String getDataBaseURL() {
+        return System.getenv().getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;");
+    }
+
+    public static void main(String[] args) throws SQLException, IOException {
+        Javalin app = getApp();
+        String address = getAddress();
+        if (address.isEmpty()) {
+            app.start(getPort());
+        } else {
+            app.start(address, getPort()); //use ADRESS ENV for render deploy based on docker host 0.0.0.0
+        }
     }
 
     public static Javalin getApp() throws IOException, SQLException {
+        HikariConfig hikariConfig;
+        // System.setProperty("h2.traceLevel", "TRACE_LEVEL_SYSTEM_OUT=4");
 
-        var hikariConfig = new HikariConfig();
-        hikariConfig.setJdbcUrl(getDatabaseUrl());
+        //DataSource initiate 2 ways: 1) Use dataSourceClassName & Properties 2) DB URL
+        String dataSourceClassName = System.getenv().getOrDefault("JDBC_DSCN", "");
+        if (dataSourceClassName.isEmpty()) {
+            hikariConfig = new HikariConfig();
+            hikariConfig.setJdbcUrl(getDataBaseURL());
+            hikariConfig.setUsername(System.getenv().getOrDefault("JDBC_DATABASE_USER", ""));
+            hikariConfig.setPassword(System.getenv().getOrDefault("JDBC_DATABASE_PASSWORD", ""));
+        } else {
+            Properties props = new Properties();
+            props.setProperty("dataSourceClassName", dataSourceClassName); //"org.postgresql.ds.PGSimpleDataSource"
+            props.setProperty("dataSource.serverName", System.getenv().getOrDefault("JDBC_HOST", "localhost"));
+            props.setProperty("dataSource.portNumber", System.getenv().getOrDefault("JDBC_PORT", "5432"));
+            props.setProperty("dataSource.user", System.getenv().getOrDefault("JDBC_DATABASE_USER", ""));
+            props.setProperty("dataSource.password", System.getenv().getOrDefault("JDBC_DATABASE_PASSWORD", ""));
+            props.setProperty("dataSource.databaseName", System.getenv().getOrDefault("JDBC_DBNAME", "project"));
+            hikariConfig = new HikariConfig(props);
+        }
 
         var dataSource = new HikariDataSource(hikariConfig);
         String sql = readResourceFile("schema.sql");
@@ -44,7 +77,13 @@ public final class App {
         log.info(sql);
         try (var connection = dataSource.getConnection();
              var statement = connection.createStatement()) {
+            log.info("Connection established!");
             statement.execute(sql);
+            log.info("tables indexes and constrains created!");
+        } catch (SQLException e) {
+            log.info("SQL Exception happened!");
+            log.info(e.toString());
+            throw e;
         }
         BaseRepository.dataSource = dataSource;
 
@@ -82,10 +121,6 @@ public final class App {
 
     }
 
-    public static void main(String[] args) throws SQLException, IOException {
-        Javalin app = getApp();
-        app.start(getPort());
-    }
 
 
 }

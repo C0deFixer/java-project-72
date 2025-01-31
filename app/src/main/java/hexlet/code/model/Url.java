@@ -36,7 +36,7 @@ public class Url {
      */
     @Override
     public String toString() {
-        return String.format("%s://%s:%s", protocol, host, port ==-1 ? "": port);
+        return String.format("%s://%s:%s", protocol, host, port == -1 ? "" : port);
     }
 
     /**

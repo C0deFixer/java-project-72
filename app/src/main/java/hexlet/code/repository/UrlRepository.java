@@ -102,7 +102,7 @@ public class UrlRepository extends BaseRepository {
     }
 
     public static boolean ifExistsByURL(Url url) throws SQLException {
-        var sql = "SELECT id FROM urls WHERE protocol = ? AND host = ? AND port =?";
+        var sql = "SELECT id FROM urls WHERE urls.protocol = ? AND urls.host = ? AND urls.port =?";
         try (var conn = dataSource.getConnection();
              var preparedStatement = conn.prepareStatement(sql)) {
             preparedStatement.setString(1, url.getProtocol());

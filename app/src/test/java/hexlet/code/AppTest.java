@@ -101,7 +101,7 @@ class AppTest {
     @DisplayName("Test post urls")
     class TestCreateUrl {
         @ParameterizedTest
-        @ValueSource(strings = {"https://tproger.ru", "https://www.h2database.com:8080", "https://app.docker.com"})
+        @ValueSource(strings = {"https://tproger.ru", "https://www.h2database.com:8080", "http://localhost:41905"})
         void testCreateUrl(String candidate) {
             JavalinTest.test(app, (server, client) -> {
                 var requestBody = "url=" + candidate;

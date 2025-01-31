@@ -50,6 +50,7 @@ public final class App {
     }
 
     public static Javalin getApp() throws IOException, SQLException {
+        log.info("\nNew example App preparing...");
         HikariConfig hikariConfig;
         // System.setProperty("h2.traceLevel", "TRACE_LEVEL_SYSTEM_OUT=4");
 
@@ -71,8 +72,9 @@ public final class App {
 
         var dataSource = new HikariDataSource(hikariConfig);
         String sql = readResourceFile("schema.sql");
+        log.info("schema sql get ready");
 
-        log.info(sql);
+        //log.info(sql);
         try (var connection = dataSource.getConnection();
              var statement = connection.createStatement()) {
             log.info("Connection established!");

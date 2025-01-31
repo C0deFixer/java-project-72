@@ -58,8 +58,6 @@ public final class App {
         if (dataSourceClassName.isEmpty()) {
             hikariConfig = new HikariConfig();
             hikariConfig.setJdbcUrl(getDataBaseURL());
-            hikariConfig.setUsername(System.getenv().getOrDefault("JDBC_DATABASE_USER", ""));
-            hikariConfig.setPassword(System.getenv().getOrDefault("JDBC_DATABASE_PASSWORD", ""));
         } else {
             Properties props = new Properties();
             props.setProperty("dataSourceClassName", dataSourceClassName); //"org.postgresql.ds.PGSimpleDataSource"

@@ -15,6 +15,7 @@ import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
 import gg.jte.resolve.ResourceCodeResolver;
 import hexlet.code.repository.BaseRepository;
+import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinJte;
@@ -103,6 +104,7 @@ public final class App {
         app.get(NamedRoutes.urlPath("{id}"), UrlController::showUrl); // "/urls/{id}"
         app.post(NamedRoutes.urlChecksPath("{id}"), UrlController::createUrlCheck); //urls/{id}/checks
 
+        UrlRepository.verifyColumns();
         return app;
     }
 

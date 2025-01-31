@@ -112,4 +112,16 @@ public class UrlRepository extends BaseRepository {
             return resultSet.next();
         }
     }
+
+    public static void verifyColumns() throws SQLException {
+        var sql = "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = ?";
+        try (var conn = dataSource.getConnection();
+             var preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setString(1, "urls");
+            var resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                log.info("Table urls Column:" + resultSet.getString("COLUMN_NAME"));
+            }
+        }
+    }
 }

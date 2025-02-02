@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.Builder;
 
-import java.net.URL;
+import java.net.URI;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
@@ -14,9 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 public class Url {
     Long id;
-    String protocol;
-    String host;
-    int port;
+    String name;
 
     LocalDateTime createdAt;
     int lastCheckStatusCode;
@@ -26,9 +24,8 @@ public class Url {
         //for jackson parsing to POJO from json test file
     }
 
-    public Url(String protocol, String host) {
-        this.protocol = protocol;
-        this.host = host;
+    public Url(String name) {
+        this.name = name;
     }
 
     /**
@@ -36,25 +33,17 @@ public class Url {
      */
     @Override
     public String toString() {
-        return String.format("%s://%s:%s", protocol, host, port == -1 ? "" : port);
+        return name;
     }
 
-    /**
-     * Use for request URL as String in Unirest.
-     *
-     * @return A formatted string
-     */
-
-    public String toUrlString() {
-        return String.format("%s://%s:%s", protocol, host, port == -1 ? "" : String.valueOf(port));
-    }
-
-    public static Url valueOf(URL url) {
-        return Url.builder()
-                .protocol(url.getProtocol())
-                .host(url.getHost())
-                .port(url.getPort())
-                .build();
+    public static Url valueOf(URI uri) {
+        return new Url(String
+                .format(
+                        "%s://%s%s",
+                        uri.getScheme(),
+                        uri.getHost(),
+                        uri.getPort() == -1 ? "" : ":" + uri.getPort())
+                .toLowerCase());
     }
 
 }

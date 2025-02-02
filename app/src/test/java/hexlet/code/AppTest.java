@@ -141,12 +141,14 @@ class AppTest {
     class TestUrlPage {
         @Test
         public void testUrlPage() throws SQLException {
-            var url = new Url("https", "homepage.su");
+            var url = new Url("https//:homepage.su");
             UrlRepository.save(url);
             JavalinTest.test(app, (server, client) -> {
                 var response = client.get(NamedRoutes.urls() + "/" + url.getId());
                 assertThat(response.code()).isEqualTo(200);
-                assertThat(response.body().string()).contains(url.toString());
+                String body = response.body().string();
+                assertThat(body).contains(url.toString());
+                assertThat(body).contains(url.getId().toString());
             });
         }
 
@@ -176,7 +178,7 @@ class AppTest {
 
             //Url url = objectMapper.readValue(urlJson, Url.class);
             URI uri = new URI(baseUrl);
-            Url url = Url.valueOf(uri.toURL());
+            Url url = Url.valueOf(uri);
             UrlRepository.save(url);
 
             JavalinTest.test(app, (server, client) -> {
@@ -210,7 +212,7 @@ class AppTest {
                     .setBody("Bad request"));
 
             URI uri = new URI(baseUrl);
-            Url url = Url.valueOf(uri.toURL());
+            Url url = Url.valueOf(uri);
             UrlRepository.save(url);
 
             JavalinTest.test(app, (server, client) -> {

@@ -17,21 +17,19 @@ public class UrlRepository extends BaseRepository {
     static final int LIMIT = 25;
 
     public static void save(Url url) throws SQLException {
-        var sql = "INSERT INTO urls (protocol, host, port, created_at) VALUES (?, ?, ?, ?)";
+        var sql = "INSERT INTO urls (name, created_at) VALUES (?,?)";
         try (var conn = dataSource.getConnection();
              var preparedStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             LocalDateTime createdAt = LocalDateTime.now();
-            log.info("Set created_at: " + createdAt.format(BaseRepository.DATE_TIME_FORMATTER));
-            preparedStatement.setString(1, url.getProtocol());
-            preparedStatement.setString(2, url.getHost());
-            preparedStatement.setInt(3, url.getPort());
-            preparedStatement.setTimestamp(4, Timestamp.valueOf(createdAt));
+            preparedStatement.setString(1, url.getName());
+            preparedStatement.setTimestamp(2, Timestamp.valueOf(createdAt));
             preparedStatement.executeUpdate();
             var generatedKeys = preparedStatement.getGeneratedKeys();
             if (generatedKeys.next()) {
                 url.setId(generatedKeys.getLong(1));
                 url.setCreatedAt(createdAt);
-                log.info("New Url save to DB: " + url);
+                log.info("New Url save to DB: " + url + " created at "
+                        + createdAt.format(BaseRepository.DATE_TIME_FORMATTER));
             } else {
                 throw new SQLException("DB have not returned an id after saving entity");
             }
@@ -39,7 +37,7 @@ public class UrlRepository extends BaseRepository {
     }
 
     public static Optional<Url> findById(Long id) throws SQLException {
-        var sql = "SELECT id, protocol, host, port, created_at FROM urls WHERE id = ? ";
+        var sql = "SELECT id, name, created_at FROM urls WHERE id = ? ";
         try (var conn = dataSource.getConnection();
              var preparedStatement = conn.prepareStatement(sql)) {
             preparedStatement.setLong(1, id);
@@ -48,9 +46,7 @@ public class UrlRepository extends BaseRepository {
             if (resultSet.next()) {
                 Url url = Url.builder()
                         .id(resultSet.getLong("id"))
-                        .protocol(resultSet.getString("protocol"))
-                        .host(resultSet.getString("host"))
-                        .port(resultSet.getInt("port"))
+                        .name(resultSet.getString("name"))
                         .createdAt(resultSet.getTimestamp("created_at").toLocalDateTime())
                         .build();
                 log.info("Found Url in  DB by id: " + url.toString());
@@ -63,7 +59,7 @@ public class UrlRepository extends BaseRepository {
     }
 
     public static List<Url> getUrlEntities() throws SQLException {
-        var sql = "SELECT urls.id, urls.protocol, urls.host, urls.port, urls.created_at, "
+        var sql = "SELECT urls.id, urls.name, urls.created_at, "
                 + "last_url_checks.status_code AS last_check_status_code, "
                 + "last_url_checks.created_at AS last_check_created_at "
                 + "FROM urls"
@@ -84,9 +80,7 @@ public class UrlRepository extends BaseRepository {
                 Timestamp lastCheck = resultSet.getTimestamp("last_check_created_at");
                 Url url = Url.builder()
                         .id(resultSet.getLong("id"))
-                        .protocol(resultSet.getString("protocol"))
-                        .host(resultSet.getString("host"))
-                        .port(resultSet.getInt("port"))
+                        .name(resultSet.getString("name"))
                         .createdAt(resultSet.getTimestamp("created_at").toLocalDateTime())
                         .lastCheckStatusCode(resultSet.getInt("last_check_status_code"))
                         .lastCheckCreatedAt(lastCheck == null ? null : lastCheck.toLocalDateTime())
@@ -101,15 +95,21 @@ public class UrlRepository extends BaseRepository {
         return entities;
     }
 
-    public static boolean ifExistsByURL(Url url) throws SQLException {
-        var sql = "SELECT id FROM urls WHERE urls.protocol = ? AND urls.host = ? AND urls.port =?";
+    public static Optional<Url> findByName(String name) throws SQLException {
+        var sql = "SELECT id, name, created_at FROM urls WHERE name = ?";
+        Url url = null;
         try (var conn = dataSource.getConnection();
              var preparedStatement = conn.prepareStatement(sql)) {
-            preparedStatement.setString(1, url.getProtocol());
-            preparedStatement.setString(2, url.getHost());
-            preparedStatement.setInt(3, url.getPort());
+            preparedStatement.setString(1, name);
             var resultSet = preparedStatement.executeQuery();
-            return resultSet.next();
+            if (resultSet.next()) {
+                url = Url.builder()
+                        .id(resultSet.getLong("id"))
+                        .name(resultSet.getString("name"))
+                        .createdAt(resultSet.getTimestamp("created_at").toLocalDateTime())
+                        .build();
+            }
+            return Optional.ofNullable(url);
         }
     }
 

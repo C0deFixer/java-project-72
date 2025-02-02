@@ -49,13 +49,14 @@ public class UrlController extends BaseController {
             return;
         }
 
-        Url url = Url.builder()
-                .protocol(parsedUrl.getProtocol())
-                .host(parsedUrl.getHost())
-                .port(parsedUrl.getPort())
-                .build();
+        Url url = new Url(String.format("%s://%s:%s",
+                        parsedUrl.getProtocol(),
+                        parsedUrl.getHost(),
+                        parsedUrl.getPort() == -1 ? "" : parsedUrl.getPort())
+                .toLowerCase());
+
         log.info("Post request create: " + ctx.path() + " form param url: " + inputUrl);
-        if (UrlRepository.ifExistsByURL(url)) {
+        if (UrlRepository.findByName(url.getName()).isPresent()) {
             log.info("Already exist: " + url.toString());
             ctx.sessionAttribute("flashMessage", "Страница уже существует");
             ctx.sessionAttribute("flashType", FLASH_TYPE_INFO);
@@ -114,7 +115,7 @@ public class UrlController extends BaseController {
                     -> new NotFoundResponse(String.format("Url with id %d not found", id)));
 
             try {
-                HttpResponse<String> response = WebSiteCheck.webSiteCheck(id, url.toUrlString());
+                HttpResponse<String> response = WebSiteCheck.webSiteCheck(id, url.toString());
                 UrlCheck urlCheck = WebSiteCheck.parseHtmlBody(response);
                 urlCheck.setUrlId(id);
                 UrlCheckRepository.save(urlCheck);

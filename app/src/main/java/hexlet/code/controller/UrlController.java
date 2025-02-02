@@ -49,10 +49,10 @@ public class UrlController extends BaseController {
             return;
         }
 
-        Url url = new Url(String.format("%s://%s:%s",
+        Url url = new Url(String.format("%s://%s%s",
                         parsedUrl.getProtocol(),
                         parsedUrl.getHost(),
-                        parsedUrl.getPort() == -1 ? "" : parsedUrl.getPort())
+                        parsedUrl.getPort() == -1 ? "" : ":" + parsedUrl.getPort())
                 .toLowerCase());
 
         log.info("Post request create: " + ctx.path() + " form param url: " + inputUrl);

@@ -5,7 +5,7 @@ import io.javalin.http.Context;
 
 import java.util.Collections;
 
-public class RootController extends BaseController {
+public class RootController {
     public static void show(Context ctx) {
         MainPage page = new MainPage(false);
         page.setFlash(ctx.consumeSessionAttribute("flashMessage"));

@@ -23,8 +23,12 @@ import java.util.Collections;
 import static java.lang.String.format;
 
 @Slf4j
-public class UrlController extends BaseController {
+public class UrlController  {
 
+    static final String FLASH_TYPE_SUCCESS = "alert-success";
+    static final String FLASH_TYPE_ALERT = "alert-danger";
+
+    static final String FLASH_TYPE_INFO = "alert-info";
 
     public static void createUrl(Context ctx) throws SQLException {
 

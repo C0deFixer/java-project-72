@@ -55,7 +55,7 @@ public class UrlCheckRepository extends BaseRepository {
                 result.add(UrlCheck.builder()
                         .id(resultSet.getLong(1))
                         .statusCode(resultSet.getInt(2))
-                        .h1(resultSet.getString(3))
+                        .title(resultSet.getString(3))
                         .h1(resultSet.getString(4))
                         .description(resultSet.getString(5))
                         .createdAt(resultSet.getTimestamp(6).toLocalDateTime())

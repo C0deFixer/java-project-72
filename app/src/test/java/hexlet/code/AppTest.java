@@ -186,6 +186,8 @@ class AppTest {
                 assertThat(response.code()).isEqualTo(200);
                 String body = response.body().string();
                 assertThat(body).contains("This page is just Mock response");
+                assertThat(body).contains("Test stub page");
+                assertThat(body).contains("Bla bla bla");
             });
 
             List<UrlCheck> urlsChecksByUrlId = UrlCheckRepository.getUrlChecksByUrlId(url.getId());
@@ -195,6 +197,8 @@ class AppTest {
             assertThat(urlCheck.getUrlId()).isEqualTo(url.getId());
             assertThat(urlCheck.getStatusCode()).isEqualTo(200);
             assertThat(urlCheck.getH1()).isEqualTo("This page is just Mock response");
+            assertThat(urlCheck.getTitle()).isEqualTo("Test stub page");
+            assertThat(urlCheck.getDescription()).isEqualTo("Bla bla bla");
 
         }
     }

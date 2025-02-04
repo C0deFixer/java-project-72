@@ -23,7 +23,7 @@ import java.util.Collections;
 import static java.lang.String.format;
 
 @Slf4j
-public class UrlController  {
+public class UrlController {
 
     static final String FLASH_TYPE_SUCCESS = "alert-success";
     static final String FLASH_TYPE_ALERT = "alert-danger";
@@ -74,9 +74,8 @@ public class UrlController  {
 
     }
 
-    public static void showUrl(Context ctx) {
+    public static void showUrl(Context ctx) throws SQLException {
 
-        try {
             var id = ctx.pathParamAsClass("id", Long.class)
                     .get();
             Url url = UrlRepository.findById(id).orElseThrow(()
@@ -90,17 +89,6 @@ public class UrlController  {
             page.setFlash(ctx.consumeSessionAttribute("flashMessage"));
             page.setFlashType(ctx.consumeSessionAttribute("flashType"));
             ctx.render("urls/url.jte", Collections.singletonMap("page", page));
-        } catch (ValidationException e) {
-            var id = ctx.pathParam("id");
-            ctx.sessionAttribute("flashMessage", format("Некорретное значение id для Url = %s !", id));
-            ctx.sessionAttribute("flashType", FLASH_TYPE_ALERT);
-            ctx.redirect(NamedRoutes.rootPath());
-        } catch (SQLException e) {
-            var id = ctx.pathParam("id");
-            ctx.sessionAttribute("flashMessage", format("Ошибка получения данных Url c id %d: " + e.getMessage(), id));
-            ctx.sessionAttribute("flashType", FLASH_TYPE_ALERT);
-            ctx.redirect(NamedRoutes.rootPath());
-        }
 
     }
 
@@ -112,32 +100,29 @@ public class UrlController  {
     }
 
     public static void createUrlCheck(Context ctx) throws SQLException {
+
+        var id = ctx.pathParamAsClass("id", Long.class)
+                .get();
+        Url url = UrlRepository.findById(id).orElseThrow(()
+                -> new NotFoundResponse(String.format("Url with id %d not found", id)));
+
+        HttpResponse<String> response = null;
         try {
-            var id = ctx.pathParamAsClass("id", Long.class)
-                    .get();
-            Url url = UrlRepository.findById(id).orElseThrow(()
-                    -> new NotFoundResponse(String.format("Url with id %d not found", id)));
-
-            try {
-                HttpResponse<String> response = WebSiteCheck.webSiteCheck(id, url.toString());
-                UrlCheck urlCheck = WebSiteCheck.parseHtmlBody(response);
-                urlCheck.setUrlId(id);
-                UrlCheckRepository.save(urlCheck);
-                ctx.sessionAttribute("flashMessage", "Страница успешно проверена");
-                ctx.sessionAttribute("flashType", FLASH_TYPE_SUCCESS);
-                ctx.redirect(NamedRoutes.urlsPath() + "/" + id);
-            } catch (ValidationException | UnirestException e) {
-                ctx.sessionAttribute("flashMessage", "Некорректный адрес");
-                ctx.sessionAttribute("flashType", FLASH_TYPE_ALERT);
-                ctx.redirect(NamedRoutes.urlsPath() + "/" + id);
-            }
-
-
-        } catch (Exception e) {
-            log.info(e.getMessage());
-            throw e;
+            response = WebSiteCheck.webSiteCheck(id, url.toString());
+        } catch (UnirestException e) {
+            ctx.sessionAttribute("flashMessage", "Некорректный адрес");
+            ctx.sessionAttribute("flashType", FLASH_TYPE_ALERT);
+            ctx.redirect(NamedRoutes.urlsPath() + "/" + id);
         }
 
+        if (response != null) {
+            UrlCheck urlCheck = WebSiteCheck.parseHtmlBody(response);
+            urlCheck.setUrlId(id);
+            UrlCheckRepository.save(urlCheck);
+            ctx.sessionAttribute("flashMessage", "Страница успешно проверена");
+            ctx.sessionAttribute("flashType", FLASH_TYPE_SUCCESS);
+        }
+        ctx.redirect(NamedRoutes.urlsPath() + "/" + id);
 
     }
 

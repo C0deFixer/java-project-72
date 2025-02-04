@@ -10,7 +10,6 @@ import hexlet.code.util.NamedRoutes;
 import hexlet.code.util.WebSiteCheck;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
-import io.javalin.validation.ValidationException;
 import kong.unirest.HttpResponse;
 import kong.unirest.UnirestException;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +18,6 @@ import java.net.URI;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.Collections;
-
-import static java.lang.String.format;
 
 @Slf4j
 public class UrlController {
@@ -76,19 +73,19 @@ public class UrlController {
 
     public static void showUrl(Context ctx) throws SQLException {
 
-            var id = ctx.pathParamAsClass("id", Long.class)
-                    .get();
-            Url url = UrlRepository.findById(id).orElseThrow(()
-                    -> new NotFoundResponse(String.format("Url with id = %s not found!", id)));
-            UrlPage page = UrlPage.builder()
-                    .id(url.getId())
-                    .name(url.toString())
-                    .createdAt(url.getCreatedAt())
-                    .urlChecks(UrlCheckRepository.getUrlChecksByUrlId(id))
-                    .build();
-            page.setFlash(ctx.consumeSessionAttribute("flashMessage"));
-            page.setFlashType(ctx.consumeSessionAttribute("flashType"));
-            ctx.render("urls/url.jte", Collections.singletonMap("page", page));
+        var id = ctx.pathParamAsClass("id", Long.class)
+                .get();
+        Url url = UrlRepository.findById(id).orElseThrow(()
+                -> new NotFoundResponse(String.format("Url with id = %s not found!", id)));
+        UrlPage page = UrlPage.builder()
+                .id(url.getId())
+                .name(url.toString())
+                .createdAt(url.getCreatedAt())
+                .urlChecks(UrlCheckRepository.getUrlChecksByUrlId(id))
+                .build();
+        page.setFlash(ctx.consumeSessionAttribute("flashMessage"));
+        page.setFlashType(ctx.consumeSessionAttribute("flashType"));
+        ctx.render("urls/url.jte", Collections.singletonMap("page", page));
 
     }
 

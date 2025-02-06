@@ -103,21 +103,20 @@ public class UrlController {
         Url url = UrlRepository.findById(id).orElseThrow(()
                 -> new NotFoundResponse(String.format("Url with id %d not found", id)));
 
-        HttpResponse<String> response = null;
         try {
-            response = WebSiteCheck.webSiteCheck(id, url.toString());
-        } catch (UnirestException e) {
-            ctx.sessionAttribute("flashMessage", "Некорректный адрес");
-            ctx.sessionAttribute("flashType", FLASH_TYPE_ALERT);
-            ctx.redirect(NamedRoutes.urlsPath() + "/" + id);
-        }
-
-        if (response != null) {
+            HttpResponse<String> response = WebSiteCheck.webSiteCheck(id, url.toString());
             UrlCheck urlCheck = WebSiteCheck.parseHtmlBody(response);
             urlCheck.setUrlId(id);
             UrlCheckRepository.save(urlCheck);
             ctx.sessionAttribute("flashMessage", "Страница успешно проверена");
             ctx.sessionAttribute("flashType", FLASH_TYPE_SUCCESS);
+        } catch (UnirestException e) {
+            ctx.sessionAttribute("flashMessage", "Некорректный адрес");
+            ctx.sessionAttribute("flashType", FLASH_TYPE_ALERT);
+            ctx.redirect(NamedRoutes.urlsPath() + "/" + id);
+        } catch (Exception e) {
+            ctx.sessionAttribute("flashMessage", e.getMessage());
+            ctx.sessionAttribute("flashType", FLASH_TYPE_ALERT);
         }
         ctx.redirect(NamedRoutes.urlsPath() + "/" + id);
 

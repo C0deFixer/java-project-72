@@ -31,17 +31,9 @@ public class UrlController {
 
         var inputUrl = ctx.formParam("url");
         URI parsedUri;
-        try {
-            parsedUri = new URI(inputUrl); //Throw URISyntaxException
-        } catch (Exception e) {
-            ctx.sessionAttribute("flash", "Некорректный URL");
-            ctx.sessionAttribute("flash-type", "danger");
-            ctx.redirect(NamedRoutes.rootPath());
-            return;
-        }
-
         URL parsedUrl; //try catch validation URL is correct
         try {
+            parsedUri = new URI(inputUrl); //Throw URISyntaxException
             parsedUrl = parsedUri.toURL();
         } catch (Exception e) {
             ctx.sessionAttribute("flash", "Некорректный URL");
@@ -49,7 +41,6 @@ public class UrlController {
             ctx.redirect(NamedRoutes.rootPath());
             return;
         }
-
         Url url = new Url(String.format("%s://%s%s",
                         parsedUrl.getProtocol(),
                         parsedUrl.getHost(),
